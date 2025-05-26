@@ -69,6 +69,22 @@ Creates a standalone `.exe` installer in the `dist/` folder.
 - [cheerio](https://www.npmjs.com/package/cheerio)
 - [jsdom](https://www.npmjs.com/package/jsdom)
 
+## 🎮 Setup
+
+- Create a config with Name; AppID; Config Path and Save Path.
+The Name can be whatever you want.
+The AppID is the name of the folder where the achievements.json are saved after you unlock them.
+The Config Path is the location where the achievements.json and images/img folder is stored.
+The Save Path is where the AppID folder is created and stored.
+- Notification Preset and Position can be set on different main screen position.
+- Sounds cand be changed and Language also based on achievements.json generated from steam if other languages exist on the file.
+- After the config is saved, can be loaded from the dropdown, and the app will:
+populate the tabel on the main window with all the achievements title\description and images,
+populate the overlay window [Shift+O] with all the achievements title\description and images,
+start looking for Save Path\AppID\achievements.json, when is created it will read it and if the achievement is unlocked will read the title\description from config json and send the notification.
+Games need to be in Borderless, on Fullscreen not all of them are working.
+If the game already has achievement unlocked, when it first load, it will displayed all the achievements unlocked and store them to not be displayed next time.
+
 ## 👤 Author
 
 **JokerVerse**  
