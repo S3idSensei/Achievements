@@ -63,6 +63,7 @@ on: (channel, callback) => ipcRenderer.on(channel, (_, data) => callback(data)),
 onImageWindowStatus: (callback) => ipcRenderer.on('image-window-status', (event, status) => callback(status)),
 setZoom: (zoomFactor) => ipcRenderer.send('set-zoom', zoomFactor),
 updateOverlayShortcut: (combo) => ipcRenderer.send('update-overlay-shortcut', combo),
+requestCurrentConfig: () => ipcRenderer.send('request-current-config'),
 // language
 refreshUILanguage: (language) => ipcRenderer.send('refresh-ui-after-language-change', language),
 setLanguage: (lang) => {

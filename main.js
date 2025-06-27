@@ -1485,6 +1485,13 @@ ipcMain.on('toggle-overlay', (event, selectedConfig) => {
   }
 });
 
+// Handle request for current config from overlay
+ipcMain.on('request-current-config', (event) => {
+  if (selectedConfig) {
+    event.sender.send('load-overlay-data', selectedConfig);
+    event.sender.send('set-language', selectedLanguage);
+  }
+});
 
 ipcMain.on('refresh-ui-after-language-change', (event, { language, configName }) => {
 selectedLanguage = language;
