@@ -6,11 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css">
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <title>Achievements</title>
 <style>
 html, body {
--webkit-app-region: drag;
 user-select: none;
 overflow-y: auto;
 overflow-x: hidden;
@@ -72,7 +72,25 @@ font-size: 14px;
 </style>
 </head>
 <body>
-<h1>Achievements</h1>
+<!-- Modern Titlebar -->
+<div class="titlebar">
+  <div class="titlebar-logo">
+    <img src="icon.ico" alt="App Icon">
+    <span class="titlebar-title">Achievements</span>
+  </div>
+  <div class="titlebar-controls">
+    <button id="minimizeBtn" class="titlebar-button">
+      <i class="fas fa-minus"></i>
+    </button>
+    <button id="maximizeBtn" class="titlebar-button">
+      <i class="far fa-square"></i>
+    </button>
+    <button id="closeBtn" class="titlebar-button close">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+</div>
+
 <div id="top-bar">
   <div id="left-controls" style="margin-left: 10px; position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
     <label for="zoom-dropdown" style="margin-left: 30px; margin-top: 25px;"></label>
@@ -85,13 +103,6 @@ font-size: 14px;
     </select>
 
   </div>
-</div>
-
-<thead class="drag">
-<div id="window-controls">
-<button id="minimizeBtn">—</button>
-<button id="maximizeBtn">▢</button>
-<button id="closeBtn">✕</button>
 </div>
 
 <div class="container">
@@ -127,7 +138,7 @@ font-weight: bold;
 </div>
 </div>
 
-<button id="playBtn" style="margin-left: auto;">▶ Play</button>
+<button id="playBtn" style="margin-left: auto;"><i class="fas fa-play"></i> Play</button>
 </div>
 
 
@@ -138,7 +149,7 @@ style="width: 120px; border-radius: 10px; box-shadow: 0 0 8px rgba(0,0,0,0.3);">
 </div>
 
 <!-- Toggleable Settings Container -->
-<div id="buttonContainer" class="hidden config-container" style="display: flex; justify-content: space-between; gap: 15px;">
+<div id="buttonContainer" class="hidden config-container" style="display: none; justify-content: space-between; gap: 15px;">
 
 <!-- Left Side: Create Config and Select Config -->
 <div class="left-config" style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 5px;">
@@ -523,43 +534,14 @@ updateScaleLabel();
 
 
 window.addEventListener('DOMContentLoaded', () => {
+  const minimizeBtn = document.getElementById('minimizeBtn');
+  const maximizeBtn = document.getElementById('maximizeBtn');
+  const closeBtn = document.getElementById('closeBtn');
 
-const minimizeBtn = document.getElementById('minimizeBtn');
-const maximizeBtn = document.getElementById('maximizeBtn');
-const closeBtn = document.getElementById('closeBtn');
-
-document.getElementById('closeConfigModal').addEventListener('click', () => {
-document.getElementById('configModal').classList.add('hidden');
-resetConfigForm();
-});
-
-if (minimizeBtn) {
-minimizeBtn.addEventListener('click', () => {
-document.dispatchEvent(new CustomEvent('custom-minimize'));
-});
-}
-
-if (maximizeBtn) {
-maximizeBtn.addEventListener('click', () => {
-document.dispatchEvent(new CustomEvent('custom-maximize'));
-});
-}
-
-if (closeBtn) {
-closeBtn.addEventListener('click', () => {
-document.dispatchEvent(new CustomEvent('custom-close'));
-});
-}
-});
-
-document.addEventListener('custom-minimize', () => {
-window.customApi.minimizeWindow();
-});
-document.addEventListener('custom-maximize', () => {
-window.customApi.maximizeWindow();
-});
-document.addEventListener('custom-close', () => {
-window.customApi.closeWindow();
+  document.getElementById('closeConfigModal').addEventListener('click', () => {
+    document.getElementById('configModal').classList.add('hidden');
+    resetConfigForm();
+  });
 });
 
 let editingConfigName = null;
@@ -705,11 +687,13 @@ window.location.reload();
 document.getElementById("toggleBtn").addEventListener("click", function () {
 let container = document.getElementById("buttonContainer");
 if (container.classList.contains("hidden")) {
-container.classList.remove("hidden");
-this.textContent = "Hide Settings";
+  container.classList.remove("hidden");
+  container.style.display = "flex";
+  this.textContent = "Hide Settings";
 } else {
-container.classList.add("hidden");
-this.textContent = "Show Settings";
+  container.classList.add("hidden");
+  container.style.display = "none";
+  this.textContent = "Show Settings";
 }
 });
 
@@ -1024,39 +1008,39 @@ showNotification(`⚠️ achievements.json not found in config: ${configName} co
 });
 
 backButton.addEventListener('click', () => {
-configList.value = '';
-backButton.classList.add('hidden');
-deleteConfigBtn.style.display = 'none';
-document.getElementById('achStats').style.display = 'none';
-window.api.closeImageWindow();
-document.getElementById('toggleImageBtn').textContent = '⇦ Show Game Image';
+  configList.value = '';
+  backButton.classList.add('hidden');
+  deleteConfigBtn.style.display = 'none';
+  document.getElementById('achStats').style.display = 'none';
+  window.api.closeImageWindow();
+  document.getElementById('toggleImageBtn').textContent = '⇦ Show Game Image';
 });
 
 document.getElementById('backButton').addEventListener('click', () => {
-const configList = document.getElementById('configList');
-configList.value = '';
-document.getElementById('backButton').style.display = 'none';
+  const configList = document.getElementById('configList');
+  configList.value = '';
+  document.getElementById('backButton').style.display = 'none';
 
-const selectOption = configList.querySelector('option[value=""]');
-if (selectOption) {
-selectOption.selected = true;
-selectOption.disabled = true;
-}
+  const selectOption = configList.querySelector('option[value=""]');
+  if (selectOption) {
+    selectOption.selected = true;
+    selectOption.disabled = true;
+  }
 
-document.getElementById('deleteConfigBtn').style.display = 'none';
-document.getElementById('editConfigBtn').style.display = 'none';
-document.getElementById('playBtn').style.display = 'none';
-resetConfigForm();
+  document.getElementById('deleteConfigBtn').style.display = 'none';
+  document.getElementById('editConfigBtn').style.display = 'none';
+  document.getElementById('playBtn').style.display = 'none';
+  resetConfigForm();
 
-const tableBody = document.getElementById('achievementsTableBody');
-if (tableBody) tableBody.innerHTML = '';
+  const tableBody = document.getElementById('achievementsTableBody');
+  if (tableBody) tableBody.innerHTML = '';
 
-window.api.updateConfig({ configName: null, preset: null, position: null });
-window.api.toggleOverlay(null);
-window.api.onLoadOverlayData(null);
-if (window.api) {
-window.api.closeImageWindow();
-}
+  window.api.updateConfig({ configName: null, preset: null, position: null });
+  window.api.toggleOverlay(null);
+  window.api.onLoadOverlayData(null);
+  if (window.api) {
+    window.api.closeImageWindow();
+  }
 });
 
 window.api.onToggleOverlayShortcut(() => {
@@ -1417,6 +1401,42 @@ document.getElementById('generateConfigsBtn').addEventListener('click', async ()
   }
 });
 
+// Window control buttons
+document.getElementById('minimizeBtn').addEventListener('click', () => {
+  window.customApi.minimizeWindow();
+});
+
+document.getElementById('maximizeBtn').addEventListener('click', () => {
+  window.customApi.maximizeWindow();
+});
+
+document.getElementById('closeBtn').addEventListener('click', () => {
+  window.customApi.closeWindow();
+});
+
+// Update maximize button icon when window state changes
+window.electron.ipcRenderer.on('window-state-change', (isMaximized) => {
+  const maximizeBtn = document.getElementById('maximizeBtn');
+  if (isMaximized) {
+    maximizeBtn.innerHTML = '<i class="far fa-clone"></i>';
+  } else {
+    maximizeBtn.innerHTML = '<i class="far fa-square"></i>';
+  }
+});
+
+// Add visual feedback when clicking buttons
+const buttons = document.querySelectorAll('.titlebar-button');
+buttons.forEach(button => {
+  button.addEventListener('mousedown', () => {
+    button.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+  });
+  button.addEventListener('mouseup', () => {
+    button.style.backgroundColor = '';
+  });
+  button.addEventListener('mouseleave', () => {
+    button.style.backgroundColor = '';
+  });
+});
 </script>
 </body>
 </html>

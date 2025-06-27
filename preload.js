@@ -78,10 +78,16 @@ setLanguageAndReload: async (language) => {
 contextBridge.exposeInMainWorld('electron', {
 ipcRenderer: {
 on: (channel, func) => {
-  ipcRenderer.on(channel, (event, ...args) => func(...args));
+  const validChannels = ['window-state-change', 'notify', 'achievements-missing', 'update-image', 'image-window-status'];
+  if (validChannels.includes(channel)) {
+    ipcRenderer.on(channel, (event, ...args) => func(...args));
+  }
 },
 send: (channel, data) => {
-  ipcRenderer.send(channel, data);
+  const validChannels = ['refresh-ui-after-language-change', 'update-overlay-shortcut'];
+  if (validChannels.includes(channel)) {
+    ipcRenderer.send(channel, data);
+  }
 }
 }
 });

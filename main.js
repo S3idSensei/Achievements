@@ -465,6 +465,20 @@ preload: path.join(__dirname, 'preload.js')
 mainWindow.loadFile('index.html');
 mainWindow.webContents.on('did-finish-load', () => {
 mainWindow.webContents.setZoomFactor(1);
+mainWindow.show();
+});
+
+// Track window state changes
+mainWindow.on('maximize', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('window-state-change', true);
+  }
+});
+
+mainWindow.on('unmaximize', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('window-state-change', false);
+  }
 });
 }
 
@@ -1493,13 +1507,13 @@ if (imageWindow && !imageWindow.isDestroyed()) imageWindow.hide();
 
 
 function maximizeWindow() {
-if (mainWindow) {
-if (mainWindow.isMaximized()) {
-mainWindow.unmaximize();
-} else {
-mainWindow.maximize();
-}
-}
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    } else {
+      mainWindow.maximize();
+    }
+  }
 }
 
 function closeWindow() {
