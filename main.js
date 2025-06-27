@@ -1508,12 +1508,12 @@ if (imageWindow && !imageWindow.isDestroyed()) imageWindow.hide();
 
 function maximizeWindow() {
   if (mainWindow && !mainWindow.isDestroyed()) {
-    if (mainWindow.isMaximized()) {
-      mainWindow.unmaximize();
-    } else {
-      mainWindow.maximize();
-    }
-  }
+if (mainWindow.isMaximized()) {
+mainWindow.unmaximize();
+} else {
+mainWindow.maximize();
+}
+}
 }
 
 function closeWindow() {
@@ -1700,85 +1700,85 @@ const { pathToFileURL } = require('url');
 
 async function autoSelectRunningGameConfig() {
   const wrapperUrl = pathToFileURL(path.join(__dirname, 'utils', 'pslist-wrapper.mjs')).href;
-  const { getProcesses } = await import(wrapperUrl);
+const { getProcesses } = await import(wrapperUrl);
 
-  const processes = await getProcesses(); 
-  const logPath = path.join(app.getPath('userData'), 'process-log.txt');
-  fs.writeFileSync(logPath, processes.map(p => p.name).join('\n'), 'utf8');
+const processes = await getProcesses(); 
+const logPath = path.join(app.getPath('userData'), 'process-log.txt');
+fs.writeFileSync(logPath, processes.map(p => p.name).join('\n'), 'utf8');
 
-  if (manualLaunchInProgress) {
-    const configPath = path.join(configsDir, `${detectedConfigName}.json`);
-    if (!fs.existsSync(configPath)) {
-      manualLaunchInProgress = false;
-      detectedConfigName = null;
-      return;
-    }
+if (manualLaunchInProgress) {
+const configPath = path.join(configsDir, `${detectedConfigName}.json`);
+if (!fs.existsSync(configPath)) {
+manualLaunchInProgress = false;
+detectedConfigName = null;
+return;
+}
 
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    const exeName = path.basename(config.process_name || '').toLowerCase();
-    const isRunning = processes.some(p => p.name.toLowerCase() === exeName);
+const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+const exeName = path.basename(config.process_name || '').toLowerCase();
+const isRunning = processes.some(p => p.name.toLowerCase() === exeName);
 
-    if (!isRunning) {
-      notifyInfo(`${config.name} closed.`);
-      manualLaunchInProgress = false;
-      detectedConfigName = null;
+if (!isRunning) {
+notifyInfo(`${config.name} closed.`);
+manualLaunchInProgress = false;
+detectedConfigName = null;
 
-      if (playtimeWindow && !playtimeWindow.isDestroyed()) {
-        playtimeWindow.webContents.send('start-close-animation');
-      }
-    }
-    return;
-  }
+if (playtimeWindow && !playtimeWindow.isDestroyed()) {
+playtimeWindow.webContents.send('start-close-animation');
+}
+}
+return;
+}
 
-  try {
-    const configs = listConfigs();
+try {
+const configs = listConfigs();
 
-    if (detectedConfigName) {
-      const configPath = path.join(configsDir, `${detectedConfigName}.json`);
-      if (!fs.existsSync(configPath)) {
-        detectedConfigName = null;
-        return;
-      }
+if (detectedConfigName) {
+const configPath = path.join(configsDir, `${detectedConfigName}.json`);
+if (!fs.existsSync(configPath)) {
+detectedConfigName = null;
+return;
+}
 
-      const configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-      const exeName = path.basename(configData.process_name || '').toLowerCase();
-      const isStillRunning = processes.some(p => p.name.toLowerCase() === exeName);
+const configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+const exeName = path.basename(configData.process_name || '').toLowerCase();
+const isStillRunning = processes.some(p => p.name.toLowerCase() === exeName);
 
-      if (!isStillRunning) {
-        notifyInfo(`${configData.name} closed.`);
-        detectedConfigName = null;
-        return;
-      }
+if (!isStillRunning) {
+notifyInfo(`${configData.name} closed.`);
+detectedConfigName = null;
+return;
+}
 
-      return;
-    }
+return;
+}
 
 
-    for (const configName of configs) {
-      const configPath = path.join(configsDir, `${configName}.json`);
-      if (!fs.existsSync(configPath)) continue;
+for (const configName of configs) {
+const configPath = path.join(configsDir, `${configName}.json`);
+if (!fs.existsSync(configPath)) continue;
 
-      const configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-      if (!configData.process_name) continue;
+const configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+if (!configData.process_name) continue;
 
-      const exeName = path.basename(configData.process_name).toLowerCase();
-      const isRunning = processes.some(p => p.name.toLowerCase() === exeName);
+const exeName = path.basename(configData.process_name).toLowerCase();
+const isRunning = processes.some(p => p.name.toLowerCase() === exeName);
 
-      if (isRunning) {
-        detectedConfigName = configName;
-        notifyInfo(`${configData.name} started.`);
+if (isRunning) {
+detectedConfigName = configName;
+notifyInfo(`${configData.name} started.`);
 
-        if (mainWindow && !mainWindow.isDestroyed()) {
-          mainWindow.webContents.send('auto-select-config', configName);
-          startPlaytimeLogWatcher(configData);
-          createGameImageWindow(configData.appid);
-        }
-        return;
-      }
-    }
-  } catch (err) {
-    notifyError('Error in autoSelectRunningGameConfig: ' + err.message);
-  }
+if (mainWindow && !mainWindow.isDestroyed()) {
+  mainWindow.webContents.send('auto-select-config', configName);
+  startPlaytimeLogWatcher(configData);
+createGameImageWindow(configData.appid);
+}
+return;
+}
+}
+} catch (err) {
+notifyError('Error in autoSelectRunningGameConfig: ' + err.message);
+}
 }
 
 

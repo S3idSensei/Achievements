@@ -534,14 +534,14 @@ updateScaleLabel();
 
 
 window.addEventListener('DOMContentLoaded', () => {
-  const minimizeBtn = document.getElementById('minimizeBtn');
-  const maximizeBtn = document.getElementById('maximizeBtn');
-  const closeBtn = document.getElementById('closeBtn');
+const minimizeBtn = document.getElementById('minimizeBtn');
+const maximizeBtn = document.getElementById('maximizeBtn');
+const closeBtn = document.getElementById('closeBtn');
 
-  document.getElementById('closeConfigModal').addEventListener('click', () => {
-    document.getElementById('configModal').classList.add('hidden');
-    resetConfigForm();
-  });
+document.getElementById('closeConfigModal').addEventListener('click', () => {
+document.getElementById('configModal').classList.add('hidden');
+resetConfigForm();
+});
 });
 
 let editingConfigName = null;
@@ -687,13 +687,13 @@ window.location.reload();
 document.getElementById("toggleBtn").addEventListener("click", function () {
 let container = document.getElementById("buttonContainer");
 if (container.classList.contains("hidden")) {
-  container.classList.remove("hidden");
+container.classList.remove("hidden");
   container.style.display = "flex";
-  this.textContent = "Hide Settings";
+this.textContent = "Hide Settings";
 } else {
-  container.classList.add("hidden");
+container.classList.add("hidden");
   container.style.display = "none";
-  this.textContent = "Show Settings";
+this.textContent = "Show Settings";
 }
 });
 
@@ -1008,39 +1008,39 @@ showNotification(`⚠️ achievements.json not found in config: ${configName} co
 });
 
 backButton.addEventListener('click', () => {
-  configList.value = '';
-  backButton.classList.add('hidden');
-  deleteConfigBtn.style.display = 'none';
-  document.getElementById('achStats').style.display = 'none';
-  window.api.closeImageWindow();
-  document.getElementById('toggleImageBtn').textContent = '⇦ Show Game Image';
+configList.value = '';
+backButton.classList.add('hidden');
+deleteConfigBtn.style.display = 'none';
+document.getElementById('achStats').style.display = 'none';
+window.api.closeImageWindow();
+document.getElementById('toggleImageBtn').textContent = '⇦ Show Game Image';
 });
 
 document.getElementById('backButton').addEventListener('click', () => {
-  const configList = document.getElementById('configList');
-  configList.value = '';
-  document.getElementById('backButton').style.display = 'none';
+const configList = document.getElementById('configList');
+configList.value = '';
+document.getElementById('backButton').style.display = 'none';
 
-  const selectOption = configList.querySelector('option[value=""]');
-  if (selectOption) {
-    selectOption.selected = true;
-    selectOption.disabled = true;
-  }
+const selectOption = configList.querySelector('option[value=""]');
+if (selectOption) {
+selectOption.selected = true;
+selectOption.disabled = true;
+}
 
-  document.getElementById('deleteConfigBtn').style.display = 'none';
-  document.getElementById('editConfigBtn').style.display = 'none';
-  document.getElementById('playBtn').style.display = 'none';
-  resetConfigForm();
+document.getElementById('deleteConfigBtn').style.display = 'none';
+document.getElementById('editConfigBtn').style.display = 'none';
+document.getElementById('playBtn').style.display = 'none';
+resetConfigForm();
 
-  const tableBody = document.getElementById('achievementsTableBody');
-  if (tableBody) tableBody.innerHTML = '';
+const tableBody = document.getElementById('achievementsTableBody');
+if (tableBody) tableBody.innerHTML = '';
 
-  window.api.updateConfig({ configName: null, preset: null, position: null });
-  window.api.toggleOverlay(null);
-  window.api.onLoadOverlayData(null);
-  if (window.api) {
-    window.api.closeImageWindow();
-  }
+window.api.updateConfig({ configName: null, preset: null, position: null });
+window.api.toggleOverlay(null);
+window.api.onLoadOverlayData(null);
+if (window.api) {
+window.api.closeImageWindow();
+}
 });
 
 window.api.onToggleOverlayShortcut(() => {
