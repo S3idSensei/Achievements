@@ -295,20 +295,6 @@ label {
   padding-top: 30px;
 }
 
-#shortcutInput {
-  background-color: var(--dracula-purple);
-  color: var(--dracula-foreground);
-  font-weight: bold;
-  padding: 10px 15px;
-  margin-bottom: 15px;
-  display: inline-block;
-  width: auto;
-}
-
-#shortcutInput:hover {
-  background-color: var(--dracula-pink);
-}
-
 #toggleBtn {
   background-color: var(--dracula-purple);
   color: var(--dracula-background);
@@ -539,3 +525,99 @@ body::-webkit-scrollbar {
 /* Status colors */
 .locked { color: var(--dracula-red) !important; font-weight: bold; }
 .unlocked { color: var(--dracula-green) !important; font-weight: bold; }
+
+/* Settings Menu Styles - Improved */
+.settings-menu {
+  position: fixed;
+  top: 38px;
+  right: 0;
+  width: 300px;
+  max-height: 80vh;
+  background-color: var(--dracula-background);
+  border-left: 1px solid var(--dracula-purple);
+  border-bottom: 1px solid var(--dracula-purple);
+  box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.3);
+  z-index: 9998;
+  overflow-y: auto;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: top right;
+  scrollbar-width: thin;
+  border-bottom-left-radius: 8px;
+  padding-top: 12px;
+}
+
+.settings-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.settings-menu::-webkit-scrollbar-thumb {
+  background-color: var(--dracula-purple);
+  border-radius: 3px;
+}
+
+.settings-menu::-webkit-scrollbar-track {
+  background-color: var(--dracula-current-line);
+}
+
+.settings-menu.hidden {
+  transform: scale(0.95);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.settings-content {
+  padding: 16px;
+}
+
+.settings-section {
+  margin-bottom: 20px;
+}
+
+.settings-section h4 {
+  margin: 0 0 10px 0;
+  color: var(--dracula-cyan);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.settings-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.settings-control label {
+  margin: 0;
+  color: var(--dracula-foreground);
+}
+
+.settings-control select,
+.settings-control button {
+  width: 150px;
+}
+
+#overlay-shortcut-btn {
+  background-color: var(--dracula-purple);
+  color: var(--dracula-background);
+  text-align: center;
+  font-weight: 500;
+}
+
+#overlay-shortcut-btn:hover {
+  background-color: var(--dracula-pink);
+}
+
+#overlay-shortcut-btn.listening {
+  background-color: var(--dracula-orange);
+  color: var(--dracula-background);
+}
+
+/* Update titlebar button styles */
+#settingsBtn {
+  color: var(--dracula-cyan);
+}
+
+#settingsBtn:hover {
+  background-color: var(--dracula-comment);
+}

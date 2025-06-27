@@ -79,6 +79,9 @@ font-size: 14px;
     <span class="titlebar-title">Achievements</span>
   </div>
   <div class="titlebar-controls">
+    <button id="settingsBtn" class="titlebar-button">
+      <i class="fas fa-cog"></i>
+    </button>
     <button id="minimizeBtn" class="titlebar-button">
       <i class="fas fa-minus"></i>
     </button>
@@ -91,23 +94,41 @@ font-size: 14px;
   </div>
 </div>
 
+<!-- Settings Menu Panel -->
+<div id="settingsMenu" class="settings-menu hidden">
+  <div class="settings-content">
+    <div class="settings-section">
+      <h4>App Scale</h4>
+      <div class="settings-control">
+        <label for="app-zoom-dropdown">Zoom Level:</label>
+        <select id="app-zoom-dropdown">
+          <option value="0.75">75%</option>
+          <option value="1" selected>100%</option>
+          <option value="1.25">125%</option>
+          <option value="1.5">150%</option>
+          <option value="2">200%</option>
+        </select>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h4>Overlay Shortcut</h4>
+      <div class="settings-control">
+        <label for="overlay-shortcut-btn">Shortcut Key:</label>
+        <button id="overlay-shortcut-btn" type="button">Set Shortcut</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="top-bar">
   <div id="left-controls" style="margin-left: 10px; position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
-    <label for="zoom-dropdown" style="margin-left: 30px; margin-top: 25px;"></label>
-    <select id="zoom-dropdown">
-      <option value="0.75">75%</option>
-      <option value="1" selected>100%</option>
-      <option value="1.25">125%</option>
-      <option value="1.5">150%</option>
-      <option value="2">200%</option>
-    </select>
-
+    <!-- Remove the zoom dropdown from here since it's now in the settings menu -->
   </div>
 </div>
 
 <div class="container">
   <div id="left-controls" style="position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
-    <button id="shortcutInput" type="button">Overlay Shortcut</button>
+    <!-- Shortcut input button removed -->
   </div>
 <!-- Toggle Settings Button -->
 <div style="margin-bottom: 10px; position: relative; display: flex; align-items: center; gap: 10px;">
@@ -302,102 +323,6 @@ style="width: 100%; appearance: none; -webkit-appearance: none; height: 6px; bor
 </div>
 
 <script>
-document.getElementById('zoom-dropdown').addEventListener('change', (e) => {
-  const zoomValue = parseFloat(e.target.value);
-  window.electronAPI.setZoomFactor(zoomValue);
-});
-
-
-const shortcutInput = document.getElementById('shortcutInput');
-let isListeningForShortcut = false;
-let pressedKeys = new Set();
-let shortcutTimeout;
-let currentKeyHandler = null;
-
-shortcutInput.addEventListener('mousedown', (e) => {
-  e.preventDefault(); 
-  shortcutInput.blur(); 
-});
-
-shortcutInput.addEventListener('click', () => {
-  if (shortcutInput.textContent === 'Press keys...') {
-    cleanupShortcutRecording();
-    restoreSavedShortcutLabel();
-    return;
-  }
-
-  shortcutInput.textContent = 'Press keys...';
-  isListeningForShortcut = true;
-  pressedKeys.clear();
-
-  const handleKeyDown = (e) => {
-    if (!isListeningForShortcut) return;
-
-    e.preventDefault();
-    pressedKeys.add(e.key);
-
-    clearTimeout(shortcutTimeout);
-    shortcutTimeout = setTimeout(() => {
-      if (!isListeningForShortcut) return;
-
-      const keys = [];
-
-      if (pressedKeys.has('Control')) keys.push('Control');
-      if (pressedKeys.has('Shift')) keys.push('Shift');
-      if (pressedKeys.has('Alt')) keys.push('Alt');
-
-      const mainKeys = [...pressedKeys].filter(k => !['Control', 'Shift', 'Alt', 'Meta'].includes(k));
-      if (mainKeys.length > 0) {
-        const mainKey = mainKeys[0];
-        keys.push(mainKey.length === 1 ? mainKey.toUpperCase() : mainKey);
-      }
-
-      if (keys.length < 2) {
-        shortcutInput.textContent = 'Invalid combo';
-		setTimeout(() => restoreSavedShortcutLabel(), 1200);
-      } else {
-        const combo = keys.join('+');
-        shortcutInput.textContent = combo;
-        window.api.savePreferences({ overlayShortcut: combo });
-        window.api.updateOverlayShortcut?.(combo); // safe optional chaining
-      }
-
-      cleanupShortcutRecording();
-    }, 400);
-  };
-
-  currentKeyHandler = handleKeyDown;
-  document.addEventListener('keydown', handleKeyDown);
-});
-
-function cleanupShortcutRecording() {
-  isListeningForShortcut = false;
-  pressedKeys.clear();
-  clearTimeout(shortcutTimeout);
-
-  if (currentKeyHandler) {
-    document.removeEventListener('keydown', currentKeyHandler);
-    currentKeyHandler = null;
-  }
-}
-
-async function restoreSavedShortcutLabel() {
-  const prefs = await window.api.loadPreferences();
-  shortcutInput.textContent = prefs?.overlayShortcut || 'Overlay Shortcut';
-}
-
-
-document.addEventListener('mousedown', (event) => {
-  if (isListeningForShortcut && event.target !== shortcutInput) {
-    cleanupShortcutRecording();
-    shortcutInput.textContent = 'Overlay Shortcut';
-  }
-});
-
-
-
-
-
 document.getElementById('toggleImageBtn').addEventListener('click', async () => {
 const selectedConfigName = document.getElementById('configList').value;
 const toggleBtn = document.getElementById('toggleImageBtn');
@@ -1216,14 +1141,14 @@ async function loadPreferences() {
     if (cb) cb.checked = prefs.disableProgress;
   }
 if (prefs.windowZoomFactor) {
-  const zoomDropdown = document.getElementById('zoom-dropdown');
+  const zoomDropdown = document.getElementById('app-zoom-dropdown');
   if (zoomDropdown) {
     zoomDropdown.value = prefs.windowZoomFactor.toString();
     window.api.setZoom(prefs.windowZoomFactor); // <== Adaugă asta aici!
   }
 }
 if (prefs.overlayShortcut) {
-  document.getElementById('shortcutInput').value = prefs.overlayShortcut;
+  document.getElementById('overlay-shortcut-btn').textContent = prefs.overlayShortcut;
 }
 }
 
@@ -1246,16 +1171,16 @@ const cb = document.getElementById('disableProgressCheckbox');
 if (cb) cb.checked = prefs.disableProgress;
 }
 if (prefs.windowZoomFactor) {
-  const zoomDropdown = document.getElementById('zoom-dropdown');
+  const zoomDropdown = document.getElementById('app-zoom-dropdown');
   if (zoomDropdown) {
     zoomDropdown.value = prefs.windowZoomFactor.toString();
     window.api.setZoom(prefs.windowZoomFactor); // <== Adaugă asta aici!
   }
 }
  if (prefs?.overlayShortcut) {
-    shortcutInput.textContent = prefs.overlayShortcut;
+    document.getElementById('overlay-shortcut-btn').textContent = prefs.overlayShortcut;
   } else {
-    shortcutInput.textContent = 'Overlay Shortcut';
+    document.getElementById('overlay-shortcut-btn').textContent = 'Set Shortcut';
   }
 }
 } catch (e) {
@@ -1263,7 +1188,7 @@ console.warn('Settings cannot be load:', e);
 }
 });
 
-['positionDropdown', 'presetDropdown', 'soundSelect', 'languageSelect', 'scaleSlider', 'disableProgressCheckbox', 'zoom-dropdown'].forEach(id => {
+['positionDropdown', 'presetDropdown', 'soundSelect', 'languageSelect', 'scaleSlider', 'disableProgressCheckbox', 'app-zoom-dropdown'].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
     el.addEventListener('change', () => {
@@ -1274,7 +1199,7 @@ console.warn('Settings cannot be load:', e);
         language: document.getElementById('languageSelect')?.value,
         notificationScale: parseFloat(document.getElementById('scaleSlider')?.value || 1),
         disableProgress: document.getElementById('disableProgressCheckbox')?.checked,
-        windowZoomFactor: parseFloat(document.getElementById('zoom-dropdown')?.value || 1)
+        windowZoomFactor: parseFloat(document.getElementById('app-zoom-dropdown')?.value || 1)
       };
       window.api.savePreferences(prefs);
       window.api.setZoom(prefs.windowZoomFactor); // setează zoom-ul live
@@ -1436,6 +1361,114 @@ buttons.forEach(button => {
   button.addEventListener('mouseleave', () => {
     button.style.backgroundColor = '';
   });
+});
+
+// Settings Menu Functionality
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  const settingsMenu = document.getElementById('settingsMenu');
+  settingsMenu.classList.toggle('hidden');
+});
+
+// Click outside to close settings menu
+document.addEventListener('click', (event) => {
+  const settingsMenu = document.getElementById('settingsMenu');
+  const settingsBtn = document.getElementById('settingsBtn');
+  
+  if (!settingsMenu.contains(event.target) && 
+      !settingsBtn.contains(event.target) && 
+      !settingsMenu.classList.contains('hidden')) {
+    settingsMenu.classList.add('hidden');
+  }
+});
+
+// Zoom level control
+document.getElementById('app-zoom-dropdown').addEventListener('change', (e) => {
+  const zoomValue = parseFloat(e.target.value);
+  window.api.setZoom(zoomValue);
+  window.api.savePreferences({ windowZoomFactor: zoomValue });
+});
+
+// Overlay shortcut functionality
+const overlayShortcutBtn = document.getElementById('overlay-shortcut-btn');
+let isListeningForShortcut = false;
+let pressedKeys = new Set();
+let shortcutTimeout;
+let currentKeyHandler = null;
+
+overlayShortcutBtn.addEventListener('click', () => {
+  if (overlayShortcutBtn.textContent === 'Press keys...' || overlayShortcutBtn.classList.contains('listening')) {
+    cleanupShortcutRecording();
+    restoreSavedShortcutLabel();
+    return;
+  }
+
+  overlayShortcutBtn.textContent = 'Press keys...';
+  overlayShortcutBtn.classList.add('listening');
+  isListeningForShortcut = true;
+  pressedKeys.clear();
+
+  const handleKeyDown = (e) => {
+    if (!isListeningForShortcut) return;
+
+    e.preventDefault();
+    pressedKeys.add(e.key);
+
+    clearTimeout(shortcutTimeout);
+    shortcutTimeout = setTimeout(() => {
+      if (!isListeningForShortcut) return;
+
+      const keys = [];
+
+      if (pressedKeys.has('Control')) keys.push('Control');
+      if (pressedKeys.has('Shift')) keys.push('Shift');
+      if (pressedKeys.has('Alt')) keys.push('Alt');
+
+      const mainKeys = [...pressedKeys].filter(k => !['Control', 'Shift', 'Alt', 'Meta'].includes(k));
+      if (mainKeys.length > 0) {
+        const mainKey = mainKeys[0];
+        keys.push(mainKey.length === 1 ? mainKey.toUpperCase() : mainKey);
+      }
+
+      if (keys.length < 2) {
+        overlayShortcutBtn.textContent = 'Invalid combo';
+        setTimeout(() => restoreSavedShortcutLabel(), 1200);
+      } else {
+        const combo = keys.join('+');
+        overlayShortcutBtn.textContent = combo;
+        window.api.savePreferences({ overlayShortcut: combo });
+        window.api.updateOverlayShortcut?.(combo);
+      }
+
+      cleanupShortcutRecording();
+    }, 400);
+  };
+
+  currentKeyHandler = handleKeyDown;
+  document.addEventListener('keydown', handleKeyDown);
+});
+
+function cleanupShortcutRecording() {
+  isListeningForShortcut = false;
+  pressedKeys.clear();
+  clearTimeout(shortcutTimeout);
+  overlayShortcutBtn.classList.remove('listening');
+
+  if (currentKeyHandler) {
+    document.removeEventListener('keydown', currentKeyHandler);
+    currentKeyHandler = null;
+  }
+}
+
+async function restoreSavedShortcutLabel() {
+  const prefs = await window.api.loadPreferences();
+  overlayShortcutBtn.textContent = prefs?.overlayShortcut || 'Set Shortcut';
+}
+
+document.addEventListener('mousedown', (event) => {
+  if (isListeningForShortcut && event.target !== overlayShortcutBtn) {
+    cleanupShortcutRecording();
+    restoreSavedShortcutLabel();
+  }
 });
 </script>
 </body>
