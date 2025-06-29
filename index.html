@@ -291,7 +291,7 @@ Save Config
 <div class="slider">
 <label for="scaleSlider">Achievement Scale: <span id="scaleValue">1.0</span></label>
 <input type="range" id="scaleSlider"
-min="0.01" max="1.0" step="0.01" value="1.0"
+min="0.01" max="2.0" step="0.01" value="1.0"
 style="width: 100%; appearance: none; -webkit-appearance: none; height: 6px; border-radius: 3px; background: #ccc; outline: none; padding: 0; margin: 0;" />
 </div>
 <div class="dropdown-group" style="display: flex; flex-direction: column; gap: 6px; margin-top:10px">
@@ -821,12 +821,33 @@ try {
 const presets = await window.api.loadPresets();
 const presetDropdown = document.getElementById('presetDropdown');
 presetDropdown.innerHTML = '';
+
+// Create category for presets that support scaling above 100%
+const highScalingGroup = document.createElement('optgroup');
+highScalingGroup.label = "⭐ Supports 200% Scaling";
+
+// Create category for regular presets
+const regularGroup = document.createElement('optgroup');
+regularGroup.label = "Standard Presets (100% Max)";
+
+// Sort presets by type
 presets.forEach(preset => {
-const option = document.createElement('option');
-option.value = preset;
-option.textContent = preset;
-presetDropdown.appendChild(option);
+  const option = document.createElement('option');
+  option.value = preset;
+  option.textContent = preset;
+  
+  // Add presets to their appropriate groups
+  if (preset === 'Modern' || preset === 'xqjan') {
+    highScalingGroup.appendChild(option);
+  } else {
+    regularGroup.appendChild(option);
+  }
 });
+
+// Add groups to dropdown with enhanced scaling options first
+presetDropdown.appendChild(highScalingGroup);
+presetDropdown.appendChild(regularGroup);
+
 } catch (error) {
 console.error('Error loading presets:', error);
 }

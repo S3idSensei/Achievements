@@ -510,8 +510,10 @@ const scale = parseFloat(message.scale || 1);
 
 const { width: windowWidth, height: windowHeight } = getPresetDimensions(presetFolder);
 
-const scaledWidth = windowWidth;
-const scaledHeight = windowHeight;
+// Apply scaling to window dimensions to prevent content overflow
+// at higher scale factors by increasing the window size proportionally
+const scaledWidth = Math.ceil(windowWidth * (scale > 1 ? scale : 1));
+const scaledHeight = Math.ceil(windowHeight * (scale > 1 ? scale : 1));
 
 let x = 0, y = 0;
 
@@ -526,7 +528,7 @@ y = 5;
 break;
 case 'bottom-right':
 x = width - scaledWidth - Math.round(20 * scale)
-y = height - Math.floor(scaledHeight * scale) - 40;
+y = height - Math.floor(scaledHeight) - 40;
 break;
 case 'top-left':
 x = Math.round(20 * scale)
@@ -534,12 +536,12 @@ y = 5;
 break;
 case 'bottom-left':
 x = Math.round(20 * scale)
-y = height - Math.floor(scaledHeight * scale) - 40;
+y = height - Math.floor(scaledHeight) - 40;
 break;
 case 'center-bottom':
 default:
 x = Math.floor((width - scaledWidth) / 2);
-y = height - Math.floor(scaledHeight * scale) - 40;
+y = height - Math.floor(scaledHeight) - 40;
 break;
 }
 
