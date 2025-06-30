@@ -818,7 +818,7 @@ document.getElementById('achStats').style.display = 'block';
 
 window.addEventListener('DOMContentLoaded', async () => {
 try {
-const presets = await window.api.loadPresets();
+const presetsData = await window.api.loadPresets();
 const presetDropdown = document.getElementById('presetDropdown');
 presetDropdown.innerHTML = '';
 
@@ -830,19 +830,40 @@ highScalingGroup.label = "⭐ Supports 200% Scaling";
 const regularGroup = document.createElement('optgroup');
 regularGroup.label = "Standard Presets (100% Max)";
 
-// Sort presets by type
-presets.forEach(preset => {
-  const option = document.createElement('option');
-  option.value = preset;
-  option.textContent = preset;
+// Check if we have the new structured format or old format
+if (presetsData.isStructured) {
+  // Handle new structured format with separate folders
   
-  // Add presets to their appropriate groups
-  if (preset === 'Modern' || preset === 'xqjan' || preset === 'NeonFuture') {
+  // Add scalable presets
+  presetsData.scalable.forEach(preset => {
+    const option = document.createElement('option');
+    option.value = preset;
+    option.textContent = preset;
     highScalingGroup.appendChild(option);
-  } else {
+  });
+  
+  // Add non-scalable presets
+  presetsData.nonScalable.forEach(preset => {
+    const option = document.createElement('option');
+    option.value = preset;
+    option.textContent = preset;
     regularGroup.appendChild(option);
-  }
-});
+  });
+} else {
+  // Handle old format for backwards compatibility
+  presetsData.forEach(preset => {
+    const option = document.createElement('option');
+    option.value = preset;
+    option.textContent = preset;
+    
+    // Add presets to their appropriate groups using the old logic
+    if (preset === 'Modern' || preset === 'xqjan' || preset === 'Neon Future') {
+      highScalingGroup.appendChild(option);
+    } else {
+      regularGroup.appendChild(option);
+    }
+  });
+}
 
 // Add groups to dropdown with enhanced scaling options first
 presetDropdown.appendChild(highScalingGroup);

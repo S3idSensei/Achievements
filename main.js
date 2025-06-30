@@ -503,7 +503,21 @@ const display = screen.getPrimaryDisplay();
 const { width, height } = display.workAreaSize;
 
 const preset = message.preset || 'default';
-const presetFolder = path.join(userPresetsFolder, preset);
+// Check in both scalable and non-scalable folders
+const scalableFolder = path.join(userPresetsFolder, 'Scalable', preset);
+const nonScalableFolder = path.join(userPresetsFolder, 'Non-scalable', preset);
+const oldStyleFolder = path.join(userPresetsFolder, preset);
+
+// Determine which folder contains the preset
+let presetFolder;
+if (fs.existsSync(scalableFolder)) {
+  presetFolder = scalableFolder;
+} else if (fs.existsSync(nonScalableFolder)) {
+  presetFolder = nonScalableFolder;
+} else {
+  presetFolder = oldStyleFolder; // Fallback to the old structure
+}
+
 const presetHtml = path.join(presetFolder, 'index.html');
 const position = message.position || 'center-bottom';
 const scale = parseFloat(message.scale || 1);
@@ -651,21 +665,49 @@ notifyError("Achievement syntax not correct:", achievement);
 ipcMain.handle('load-presets', async () => {
 if (!fs.existsSync(userPresetsFolder)) return [];
 
-const presetsJsonPath = path.join(userPresetsFolder, 'presets.json');
 try {
-if (fs.existsSync(presetsJsonPath)) {
-const data = fs.readFileSync(presetsJsonPath, 'utf-8');
-const parsed = JSON.parse(data);
-return parsed.presets;
-} else {
-const dirs = fs.readdirSync(userPresetsFolder, { withFileTypes: true })
-.filter(dirent => dirent.isDirectory())
-.map(dirent => dirent.name);
-return dirs;
-}
+  // Check for the new structure with separate folders
+  const scalableFolder = path.join(userPresetsFolder, 'Scalable');
+  const nonScalableFolder = path.join(userPresetsFolder, 'Non-scalable');
+  
+  // Result object with category information
+  let result = {
+    scalable: [],
+    nonScalable: [],
+    isStructured: true  // Flag to indicate we're using the new folder structure
+  };
+  
+  // If both category folders exist, use the new structure
+  if (fs.existsSync(scalableFolder) && fs.existsSync(nonScalableFolder)) {
+    // Get scalable presets
+    const scalableDirs = fs.readdirSync(scalableFolder, { withFileTypes: true })
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => dirent.name);
+    
+    // Get non-scalable presets
+    const nonScalableDirs = fs.readdirSync(nonScalableFolder, { withFileTypes: true })
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => dirent.name);
+    
+    result.scalable = scalableDirs;
+    result.nonScalable = nonScalableDirs;
+    
+    return result;
+  } else {
+    // Fall back to flat structure if category folders don't exist
+    const dirs = fs.readdirSync(userPresetsFolder, { withFileTypes: true })
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => dirent.name);
+    
+    // Filter out the category folders themselves if they exist
+    const flatDirs = dirs.filter(dir => dir !== 'Scalable' && dir !== 'Non-scalable');
+    
+    // For backwards compatibility, return just the array
+    return flatDirs;
+  }
 } catch (error) {
-notifyError('Error reading presets:' + error.message);
-return [];
+  notifyError('Error reading presets: ' + error.message);
+  return [];
 }
 });
 
@@ -721,7 +763,22 @@ sound: achievement.sound,
 scale: parseFloat(achievement.scale || 1)
 };
 
-const presetFolder = path.join(userPresetsFolder, achievement.preset || 'default');
+const preset = achievement.preset || 'default';
+// Check in both scalable and non-scalable folders
+const scalableFolder = path.join(userPresetsFolder, 'Scalable', preset);
+const nonScalableFolder = path.join(userPresetsFolder, 'Non-scalable', preset);
+const oldStyleFolder = path.join(userPresetsFolder, preset);
+
+// Determine which folder contains the preset
+let presetFolder;
+if (fs.existsSync(scalableFolder)) {
+  presetFolder = scalableFolder;
+} else if (fs.existsSync(nonScalableFolder)) {
+  presetFolder = nonScalableFolder;
+} else {
+  presetFolder = oldStyleFolder; // Fallback to the old structure
+}
+
 const duration = getPresetAnimationDuration(presetFolder);
 const notificationWindow = createNotificationWindow(notificationData);
 
