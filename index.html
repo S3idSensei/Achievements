@@ -96,7 +96,9 @@ font-size: 14px;
 
 <!-- Settings Menu Panel -->
 <div id="settingsMenu" class="settings-menu hidden">
-  <div class="settings-content">
+  <div class="settings-content" tabindex="-1">
+    <button class="settings-close-button" id="closeSettingsBtn">&times;</button>
+    <h2 style="margin-top: 0; color: var(--dracula-purple); margin-bottom: 20px;">Settings</h2>
     <div class="settings-section">
       <h4>App Scale</h4>
       <div class="settings-control">
@@ -1380,20 +1382,37 @@ buttons.forEach(button => {
 });
 
 // Settings Menu Functionality
-document.getElementById('settingsBtn').addEventListener('click', () => {
+document.getElementById('settingsBtn').addEventListener('click', (event) => {
+  event.stopPropagation();
   const settingsMenu = document.getElementById('settingsMenu');
-  settingsMenu.classList.toggle('hidden');
+  settingsMenu.classList.remove('hidden');
+  // Set focus to the settings menu for keyboard accessibility
+  setTimeout(() => {
+    document.querySelector('.settings-content').focus();
+  }, 10);
+});
+
+// Close settings menu with close button
+document.getElementById('closeSettingsBtn').addEventListener('click', () => {
+  const settingsMenu = document.getElementById('settingsMenu');
+  settingsMenu.classList.add('hidden');
 });
 
 // Click outside to close settings menu
-document.addEventListener('click', (event) => {
-  const settingsMenu = document.getElementById('settingsMenu');
-  const settingsBtn = document.getElementById('settingsBtn');
-  
-  if (!settingsMenu.contains(event.target) && 
-      !settingsBtn.contains(event.target) && 
-      !settingsMenu.classList.contains('hidden')) {
-    settingsMenu.classList.add('hidden');
+document.getElementById('settingsMenu').addEventListener('click', (event) => {
+  const settingsContent = document.querySelector('.settings-content');
+  if (!settingsContent.contains(event.target)) {
+    document.getElementById('settingsMenu').classList.add('hidden');
+  }
+});
+
+// Close settings menu with Escape key
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    const settingsMenu = document.getElementById('settingsMenu');
+    if (!settingsMenu.classList.contains('hidden')) {
+      settingsMenu.classList.add('hidden');
+    }
   }
 });
 
