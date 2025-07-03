@@ -98,25 +98,82 @@ font-size: 14px;
 <div id="settingsMenu" class="settings-menu hidden">
   <div class="settings-content" tabindex="-1">
     <button class="settings-close-button" id="closeSettingsBtn">&times;</button>
-    <h2 style="margin-top: 0; color: var(--dracula-purple); margin-bottom: 20px;">Settings</h2>
-    <div class="settings-section">
-      <h4>App Scale</h4>
-      <div class="settings-control">
-        <label for="app-zoom-dropdown">Zoom Level:</label>
-        <select id="app-zoom-dropdown">
-          <option value="0.75">75%</option>
-          <option value="1" selected>100%</option>
-          <option value="1.25">125%</option>
-          <option value="1.5">150%</option>
-          <option value="2">200%</option>
-        </select>
-      </div>
+    
+    <div class="settings-tabs">
+      <h3 style="margin: 0 0 15px 10px; color: var(--dracula-purple);">Settings</h3>
+      <button class="settings-tab active" data-tab="general">General</button>
+      <button class="settings-tab" data-tab="notification">Notification</button>
     </div>
-    <div class="settings-section">
-      <h4>Overlay Shortcut</h4>
-      <div class="settings-control">
-        <label for="overlay-shortcut-btn">Shortcut Key:</label>
-        <button id="overlay-shortcut-btn" type="button">Set Shortcut</button>
+    
+    <div class="settings-tabs-content">
+      <div id="generalTab" class="tab-content active">
+        <div style="padding: 0 5px;">
+          <div class="settings-section">
+            <h4>App Scale</h4>
+            <div class="settings-control">
+              <label for="app-zoom-dropdown">Zoom Level:</label>
+              <select id="app-zoom-dropdown">
+                <option value="0.75">75%</option>
+                <option value="1" selected>100%</option>
+                <option value="1.25">125%</option>
+                <option value="1.5">150%</option>
+                <option value="2">200%</option>
+              </select>
+            </div>
+          </div>
+          <div class="settings-section">
+            <h4>Overlay Shortcut</h4>
+            <div class="settings-control">
+              <label for="overlay-shortcut-btn">Shortcut Key:</label>
+              <button id="overlay-shortcut-btn" type="button">Set Shortcut</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="notificationTab" class="tab-content">
+        <div style="padding: 0 5px;">
+          <div class="settings-section">
+            <h4>Achievement Testing</h4>
+            <button id="settings-testAchievementBtn" class="settings-test-button" style="width: 100%; margin: 10px 0; padding: 10px;">Test Achievement</button>
+            
+            <div class="checkbox-control">
+              <input type="checkbox" id="settings-disableProgressCheckbox" />
+              <label for="settings-disableProgressCheckbox">Disable Progress Report</label>
+            </div>
+            
+            <div class="settings-slider">
+              <label for="settings-scaleSlider">Achievement Scale: <span id="settings-scaleValue">1.0</span></label>
+              <div class="slider-control">
+                <input type="range" id="settings-scaleSlider"
+                  min="0.01" max="2.0" step="0.01" value="1.0" />
+                <span class="value" id="settings-scaleValueDisplay">100%</span>
+              </div>
+            </div>
+            
+            <div class="settings-control">
+              <label for="settings-positionDropdown">Achievement Position:</label>
+              <select id="settings-positionDropdown">
+                <option value="center-bottom">Center Bottom</option>
+                <option value="center-top">Center Top</option>
+                <option value="top-right">Top Right</option>
+                <option value="bottom-right">Bottom Right</option>
+                <option value="top-left">Top Left</option>
+                <option value="bottom-left">Bottom Left</option>
+              </select>
+            </div>
+            
+            <div class="settings-control">
+              <label for="settings-presetDropdown">Achievement Presets:</label>
+              <select id="settings-presetDropdown"></select>
+            </div>
+            
+            <div class="settings-control">
+              <label for="settings-soundSelect">Achievement Sound:</label>
+              <select id="settings-soundSelect"></select>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -283,35 +340,7 @@ Save Config
 
 <!-- Right Side: Test Achievement + Dropdowns -->
 <div class="settings-container" style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 5px;">
-<div style="display: flex; align-items: center; gap: 50px;">
-<button id="testAchievementBtn">Test Achievement</button>
-<label style="display: flex; align-items: center; gap: 15px;">Disable Progress Report
-<input type="checkbox" id="disableProgressCheckbox" />
-</label>
-</div>
-
-<div class="slider">
-<label for="scaleSlider">Achievement Scale: <span id="scaleValue">1.0</span></label>
-<input type="range" id="scaleSlider"
-min="0.01" max="2.0" step="0.01" value="1.0"
-style="width: 100%; appearance: none; -webkit-appearance: none; height: 6px; border-radius: 3px; background: #ccc; outline: none; padding: 0; margin: 0;" />
-</div>
-<div class="dropdown-group" style="display: flex; flex-direction: column; gap: 6px; margin-top:10px">
-<label for="positionDropdown">Achievement Position:</label>
-<select id="positionDropdown">
-<option value="center-bottom">Center Bottom</option>
-<option value="center-top">Center Top</option>
-<option value="top-right">Top Right</option>
-<option value="bottom-right">Bottom Right</option>
-<option value="top-left">Top Left</option>
-<option value="bottom-left">Bottom Left</option>
-</select>
-
-<label for="presetDropdown">Achievement Presets:</label>
-<select id="presetDropdown"></select>					
-<label for="soundSelect">Achievement Sound:</label>
-<select id="soundSelect"></select>
-</div>
+  <!-- Content removed as it's now in the settings modal -->
 </div>
 </div>
 </div>
@@ -322,6 +351,24 @@ style="width: 100%; appearance: none; -webkit-appearance: none; height: 6px; bor
 <tbody id="achievementsTableBody"></tbody>
 </table>
 <div style="height: 50px;"></div>
+</div>
+
+<!-- Hidden elements to maintain compatibility with existing code -->
+<div style="display: none;">
+  <button id="testAchievementBtn">Test Achievement</button>
+  <input type="checkbox" id="disableProgressCheckbox" />
+  <input type="range" id="scaleSlider" min="0.01" max="2.0" step="0.01" value="1.0" />
+  <span id="scaleValue">1.0</span>
+  <select id="positionDropdown">
+    <option value="center-bottom">Center Bottom</option>
+    <option value="center-top">Center Top</option>
+    <option value="top-right">Top Right</option>
+    <option value="bottom-right">Bottom Right</option>
+    <option value="top-left">Top Left</option>
+    <option value="bottom-left">Bottom Left</option>
+  </select>
+  <select id="presetDropdown"></select>
+  <select id="soundSelect"></select>
 </div>
 
 <script>
@@ -1386,6 +1433,10 @@ document.getElementById('settingsBtn').addEventListener('click', (event) => {
   event.stopPropagation();
   const settingsMenu = document.getElementById('settingsMenu');
   settingsMenu.classList.remove('hidden');
+  
+  // Sync settings values from main UI to settings menu
+  syncSettingsToModal();
+  
   // Set focus to the settings menu for keyboard accessibility
   setTimeout(() => {
     document.querySelector('.settings-content').focus();
@@ -1396,6 +1447,7 @@ document.getElementById('settingsBtn').addEventListener('click', (event) => {
 document.getElementById('closeSettingsBtn').addEventListener('click', () => {
   const settingsMenu = document.getElementById('settingsMenu');
   settingsMenu.classList.add('hidden');
+  syncSettingsFromModal();
 });
 
 // Click outside to close settings menu
@@ -1403,6 +1455,7 @@ document.getElementById('settingsMenu').addEventListener('click', (event) => {
   const settingsContent = document.querySelector('.settings-content');
   if (!settingsContent.contains(event.target)) {
     document.getElementById('settingsMenu').classList.add('hidden');
+    syncSettingsFromModal();
   }
 });
 
@@ -1412,9 +1465,158 @@ document.addEventListener('keydown', (event) => {
     const settingsMenu = document.getElementById('settingsMenu');
     if (!settingsMenu.classList.contains('hidden')) {
       settingsMenu.classList.add('hidden');
+      syncSettingsFromModal();
     }
   }
 });
+
+// Tab switching
+document.querySelectorAll('.settings-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    // Remove active class from all tabs
+    document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    // Add active class to clicked tab and corresponding content
+    tab.classList.add('active');
+    const tabId = tab.getAttribute('data-tab');
+    document.getElementById(tabId + 'Tab').classList.add('active');
+  });
+});
+
+// Achievement test button in settings
+document.getElementById('settings-testAchievementBtn').addEventListener('click', function() {
+  const preset = document.getElementById('settings-presetDropdown').value || 'default';
+  const position = document.getElementById('settings-positionDropdown').value;
+  const sound = document.getElementById('settings-soundSelect').value;
+  const scale = parseFloat(document.getElementById('settings-scaleSlider').value);
+  
+  window.api.showTestNotification({
+    preset,
+    position,
+    sound,
+    scale
+  });
+});
+
+// Settings scale slider
+const settingsScaleSlider = document.getElementById('settings-scaleSlider');
+const settingsScaleValue = document.getElementById('settings-scaleValue');
+const settingsScaleValueDisplay = document.getElementById('settings-scaleValueDisplay');
+
+function updateSettingsScaleLabel() {
+  const value = parseFloat(settingsScaleSlider.value);
+  const percentage = Math.round(value * 100);
+  settingsScaleValue.textContent = value.toFixed(2);
+  settingsScaleValueDisplay.textContent = `${percentage}%`;
+  settingsScaleSlider.style.background = `linear-gradient(to right, var(--dracula-cyan) 0%, var(--dracula-cyan) ${percentage}%, #ccc ${percentage}%, #ccc 100%)`;
+}
+
+settingsScaleSlider.addEventListener('input', () => {
+  updateSettingsScaleLabel();
+  window.api.savePreferences({ notificationScale: settingsScaleSlider.value });
+});
+
+// Settings disable progress checkbox
+document.getElementById('settings-disableProgressCheckbox').addEventListener('change', async (e) => {
+  const isChecked = e.target.checked;
+  window.api.disableProgress(isChecked);
+  await window.api.savePreferences({ disableProgress: isChecked });
+});
+
+// Function to sync values between main UI and settings menu
+function syncSettingsToModal() {
+  // Copy preset options
+  const mainPresetDropdown = document.getElementById('presetDropdown');
+  const settingsPresetDropdown = document.getElementById('settings-presetDropdown');
+  
+  if (mainPresetDropdown && settingsPresetDropdown) {
+    settingsPresetDropdown.innerHTML = mainPresetDropdown.innerHTML;
+    if (mainPresetDropdown.value) {
+      settingsPresetDropdown.value = mainPresetDropdown.value;
+    }
+  }
+  
+  // Copy sound options
+  const mainSoundSelect = document.getElementById('soundSelect');
+  const settingsSoundSelect = document.getElementById('settings-soundSelect');
+  
+  if (mainSoundSelect && settingsSoundSelect) {
+    settingsSoundSelect.innerHTML = mainSoundSelect.innerHTML;
+    if (mainSoundSelect.value) {
+      settingsSoundSelect.value = mainSoundSelect.value;
+    }
+  }
+  
+  // Sync position dropdown
+  const mainPositionDropdown = document.getElementById('positionDropdown');
+  const settingsPositionDropdown = document.getElementById('settings-positionDropdown');
+  
+  if (mainPositionDropdown && settingsPositionDropdown) {
+    settingsPositionDropdown.value = mainPositionDropdown.value;
+  }
+  
+  // Sync scale slider
+  const mainScaleSlider = document.getElementById('scaleSlider');
+  const settingsScaleSlider = document.getElementById('settings-scaleSlider');
+  
+  if (mainScaleSlider && settingsScaleSlider) {
+    settingsScaleSlider.value = mainScaleSlider.value;
+    updateSettingsScaleLabel();
+  }
+  
+  // Sync disable progress checkbox
+  const mainDisableProgressCheckbox = document.getElementById('disableProgressCheckbox');
+  const settingsDisableProgressCheckbox = document.getElementById('settings-disableProgressCheckbox');
+  
+  if (mainDisableProgressCheckbox && settingsDisableProgressCheckbox) {
+    settingsDisableProgressCheckbox.checked = mainDisableProgressCheckbox.checked;
+  }
+}
+
+function syncSettingsFromModal() {
+  // Copy values from settings menu to main UI
+  const mainPresetDropdown = document.getElementById('presetDropdown');
+  const settingsPresetDropdown = document.getElementById('settings-presetDropdown');
+  
+  if (mainPresetDropdown && settingsPresetDropdown && settingsPresetDropdown.value) {
+    mainPresetDropdown.value = settingsPresetDropdown.value;
+  }
+  
+  // Copy sound options
+  const mainSoundSelect = document.getElementById('soundSelect');
+  const settingsSoundSelect = document.getElementById('settings-soundSelect');
+  
+  if (mainSoundSelect && settingsSoundSelect && settingsSoundSelect.value) {
+    mainSoundSelect.value = settingsSoundSelect.value;
+  }
+  
+  // Sync position dropdown
+  const mainPositionDropdown = document.getElementById('positionDropdown');
+  const settingsPositionDropdown = document.getElementById('settings-positionDropdown');
+  
+  if (mainPositionDropdown && settingsPositionDropdown) {
+    mainPositionDropdown.value = settingsPositionDropdown.value;
+  }
+  
+  // Sync scale slider
+  const mainScaleSlider = document.getElementById('scaleSlider');
+  const settingsScaleSlider = document.getElementById('settings-scaleSlider');
+  
+  if (mainScaleSlider && settingsScaleSlider) {
+    mainScaleSlider.value = settingsScaleSlider.value;
+    const event = new Event('input');
+    mainScaleSlider.dispatchEvent(event);
+  }
+  
+  // Sync disable progress checkbox
+  const mainDisableProgressCheckbox = document.getElementById('disableProgressCheckbox');
+  const settingsDisableProgressCheckbox = document.getElementById('settings-disableProgressCheckbox');
+  
+  if (mainDisableProgressCheckbox && settingsDisableProgressCheckbox) {
+    mainDisableProgressCheckbox.checked = settingsDisableProgressCheckbox.checked;
+  }
+}
 
 // Zoom level control
 document.getElementById('app-zoom-dropdown').addEventListener('change', (e) => {
@@ -1487,7 +1689,7 @@ function cleanupShortcutRecording() {
   pressedKeys.clear();
   clearTimeout(shortcutTimeout);
   overlayShortcutBtn.classList.remove('listening');
-
+  
   if (currentKeyHandler) {
     document.removeEventListener('keydown', currentKeyHandler);
     currentKeyHandler = null;

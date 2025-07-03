@@ -544,20 +544,23 @@ body::-webkit-scrollbar {
 }
 
 .settings-content {
-  width: 400px;
+  width: 550px;
+  height: 450px;
   max-width: 90%;
+  max-height: 80vh;
   background-color: var(--dracula-background);
   border: 1px solid var(--dracula-purple);
   border-radius: 12px;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
-  max-height: 80vh;
-  overflow-y: auto;
+  overflow: hidden;
   padding: 24px;
   position: relative;
-  scrollbar-width: thin;
   transform: scale(1);
   transition: transform 0.3s ease;
   outline: none;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
 }
 
 .settings-menu.hidden {
@@ -569,17 +572,200 @@ body::-webkit-scrollbar {
   transform: scale(0.95);
 }
 
-.settings-content::-webkit-scrollbar {
+/* Settings tabs */
+.settings-tabs {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  width: 120px;
+  border-right: 1px solid var(--dracula-current-line);
+  margin-right: 20px;
+  padding-right: 20px;
+  flex-shrink: 0;
+}
+
+.settings-tab {
+  padding: 10px 15px;
+  cursor: pointer;
+  color: var(--dracula-comment);
+  font-weight: 500;
+  position: relative;
+  transition: all 0.2s ease;
+  background-color: transparent;
+  border: none;
+  text-align: left;
+  border-radius: 6px;
+  margin-bottom: 5px;
+}
+
+.settings-tab:hover {
+  color: var(--dracula-foreground);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.settings-tab.active {
+  color: var(--dracula-cyan);
+  background-color: var(--dracula-current-line);
+}
+
+.settings-tab.active::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -21px;
+  height: 100%;
+  width: 2px;
+  background-color: var(--dracula-cyan);
+}
+
+.settings-tabs-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  position: relative;
+  height: 100%;
+}
+
+.tab-content {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.tab-content::-webkit-scrollbar {
   width: 6px;
 }
 
-.settings-content::-webkit-scrollbar-thumb {
+.tab-content::-webkit-scrollbar-thumb {
   background-color: var(--dracula-purple);
   border-radius: 3px;
 }
 
-.settings-content::-webkit-scrollbar-track {
+.tab-content::-webkit-scrollbar-track {
   background-color: var(--dracula-current-line);
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Settings notification tab */
+.settings-slider {
+  margin: 15px 0;
+}
+
+.settings-slider label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.settings-slider .slider-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-slider input[type="range"] {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: #ccc;
+  outline: none;
+  padding: 0;
+  margin: 0;
+}
+
+.settings-slider .value {
+  min-width: 40px;
+  text-align: right;
+}
+
+.checkbox-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.checkbox-control input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+#overlay-shortcut-btn {
+  background-color: var(--dracula-purple);
+  color: var(--dracula-background);
+  text-align: center;
+  font-weight: 500;
+}
+
+#overlay-shortcut-btn:hover {
+  background-color: var(--dracula-pink);
+}
+
+#overlay-shortcut-btn.listening {
+  background-color: var(--dracula-orange);
+  color: var(--dracula-background);
+}
+
+/* Update titlebar button styles */
+#settingsBtn {
+  color: var(--dracula-cyan);
+}
+
+#settingsBtn:hover {
+  background-color: var(--dracula-comment);
+}
+
+.settings-test-button {
+  background-color: var(--dracula-orange);
+  color: var(--dracula-background);
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.settings-test-button:hover {
+  background-color: var(--dracula-yellow);
+}
+
+.settings-close-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dracula-foreground);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.settings-close-button:hover {
+  color: var(--dracula-red);
 }
 
 .settings-section {
@@ -608,51 +794,4 @@ body::-webkit-scrollbar {
 .settings-control select,
 .settings-control button {
   width: 150px;
-}
-
-.settings-close-button {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 24px;
-  height: 24px;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--dracula-foreground);
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: color 0.2s ease;
-}
-
-.settings-close-button:hover {
-  color: var(--dracula-red);
-}
-
-#overlay-shortcut-btn {
-  background-color: var(--dracula-purple);
-  color: var(--dracula-background);
-  text-align: center;
-  font-weight: 500;
-}
-
-#overlay-shortcut-btn:hover {
-  background-color: var(--dracula-pink);
-}
-
-#overlay-shortcut-btn.listening {
-  background-color: var(--dracula-orange);
-  color: var(--dracula-background);
-}
-
-/* Update titlebar button styles */
-#settingsBtn {
-  color: var(--dracula-cyan);
-}
-
-#settingsBtn:hover {
-  background-color: var(--dracula-comment);
 }
