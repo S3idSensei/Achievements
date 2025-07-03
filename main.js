@@ -582,7 +582,7 @@ backgroundThrottling: false
 });
 
 notificationWindow.setAlwaysOnTop(true, 'screen-saver');
-notificationWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+notificationWindow.setVisibleOnAllWorkspaces(true);
 notificationWindow.setFullScreenable(false);
 notificationWindow.setFocusable(false);
 
@@ -916,6 +916,7 @@ return {};
 }
 }
 
+
 function monitorAchievementsFile(filePath) {
 if (!filePath) {
 if (achievementsWatcher && currentAchievementsFilePath) {
@@ -1071,7 +1072,7 @@ description,
   preset: selectedPreset,
   position: selectedPosition,
   sound: selectedSound || 'mute',
-  soundPath: path.join(app.getAppPath(), 'sounds', selectedSound)
+  soundPath: selectedSound ? path.join(app.getAppPath(), 'sounds', selectedSound) : null
 });
 previousAchievements[key] = {
 earned: true,
