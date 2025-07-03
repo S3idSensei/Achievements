@@ -888,43 +888,17 @@ position = positionDropdown.value;
 });
 
 testButton.addEventListener('click', async function() {
-const selectedConfig = configList.value;
-if (!selectedConfig) {
-alert("Select a config!");
-return;
-}
-
-const achievementsData = await window.api.loadAchievementData(selectedConfig);
-if (achievementsData.error) {
-alert(achievementsData.error);
-return;
-}
-
-const achievement = achievementsData.achievements[0];
-if (!achievement) {
-alert("No achievements on this config.");
-return;
-}
-
-const preset = presetDropdown.value || 'default';
-const position = positionDropdown.value;
-const lang = document.getElementById('languageSelect').value;
-const sound = document.getElementById('soundSelect').value;
-const displayName = getSafeLocalizedText(achievement.displayName, lang);
-const description = getSafeLocalizedText(achievement.description, lang);
-const notificationObj = {
-displayName,
-description,
-icon: achievement.icon,
-icon_gray: achievement.icon_gray || achievement.icongray,
-config_path: achievementsData.config_path,
-preset: preset,
-position: position,
-sound: sound
-};
-
-
-window.api.showNotification(notificationObj);
+  const preset = presetDropdown.value || 'default';
+  const position = positionDropdown.value;
+  const sound = document.getElementById('soundSelect').value;
+  const scale = parseFloat(document.getElementById('scaleSlider').value);
+  
+  window.api.showTestNotification({
+    preset,
+    position,
+    sound,
+    scale
+  });
 });
 
 });

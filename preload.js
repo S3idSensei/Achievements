@@ -22,6 +22,7 @@ loadPresets: () => ipcRenderer.invoke('load-presets'),
 
 // Notification
 showNotification: (data) => ipcRenderer.send('show-notification', data),
+showTestNotification: (options) => ipcRenderer.send('show-test-notification', options),
 onNotification: (callback) => ipcRenderer.on('show-notification', (event, data) => callback(data)),
 onNotify: (callback) => ipcRenderer.on('notify', (_, data) => callback(data)),
 notifyMain: (msg) => ipcRenderer.send('notify-from-child', msg),

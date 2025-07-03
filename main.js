@@ -661,6 +661,29 @@ notifyError("Achievement syntax not correct:", achievement);
 }
 });
 
+// Add new IPC handler for test achievements that doesn't require a config
+ipcMain.on('show-test-notification', (event, options) => {
+  const prefs = fs.existsSync(preferencesPath)
+    ? JSON.parse(fs.readFileSync(preferencesPath, 'utf8'))
+    : {};
+
+  const iconPath = path.join(__dirname, 'icon.ico');
+
+  const notificationData = {
+    displayName: "This is a testing achievement notification",
+    description: "This is a testing achievement notification for this app",
+    icon: "icon.ico", // Use app icon
+    icon_gray: "icon.ico", // Use app icon
+    config_path: __dirname, // Use app's directory
+    preset: options.preset || 'default',
+    position: options.position || 'center-bottom',
+    sound: options.sound || 'mute',
+    scale: parseFloat(prefs.notificationScale || options.scale || 1)
+  };
+
+  queueAchievementNotification(notificationData);
+});
+
 
 ipcMain.handle('load-presets', async () => {
 if (!fs.existsSync(userPresetsFolder)) return [];
@@ -812,108 +835,107 @@ return path.join(cacheDir, `${configName}_achievements_cache.json`);
 }
 
 function loadPreviousAchievements(configName) {
-const cachePath = getCachePath(configName);
-if (fs.existsSync(cachePath)) {
-try {
-return JSON.parse(fs.readFileSync(cachePath, 'utf8'));
-} catch (e) {
-notifyError('Error reading achievement cache: ' + e.message);
-}
-}
-return {};
+  const cachePath = getCachePath(configName);
+  if (fs.existsSync(cachePath)) {
+    try {
+      return JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+    } catch (e) {
+      notifyError('Error reading achievement cache: ' + e.message);
+    }
+  }
+  return {};
 }
 
 function savePreviousAchievements(configName, data) {
-const cachePath = getCachePath(configName);
-try {
-fs.writeFileSync(cachePath, JSON.stringify(data, null, 2));
-} catch (e) {
-notifyError('Error reading achievement cache: ' + e.message);
-}
+  const cachePath = getCachePath(configName);
+  try {
+    fs.writeFileSync(cachePath, JSON.stringify(data, null, 2));
+  } catch (e) {
+    notifyError('Error reading achievement cache: ' + e.message);
+  }
 }
 
 function loadAchievementsFromSaveFile(saveDir) {
-const jsonPath = path.join(saveDir, 'achievements.json');
-const iniPath = path.join(saveDir, 'achievements.ini');
-const binPath = path.join(saveDir, 'stats.bin');
-if (fs.existsSync(jsonPath)) {
-try {
-const raw = fs.readFileSync(jsonPath, 'utf8');
-const data = JSON.parse(raw);
+  const jsonPath = path.join(saveDir, 'achievements.json');
+  const iniPath = path.join(saveDir, 'achievements.ini');
+  const binPath = path.join(saveDir, 'stats.bin');
+  
+  if (fs.existsSync(jsonPath)) {
+    try {
+      const raw = fs.readFileSync(jsonPath, 'utf8');
+      const data = JSON.parse(raw);
 
-if (!Array.isArray(data)) {
-return data;
-}
+      if (!Array.isArray(data)) {
+        return data;
+      }
 
-const converted = {};
-for (const item of data) {
-if (item.name) {
-converted[item.name] = {
-earned: item.achieved === true,
-earned_time: item.UnlockTime || 0
-};
-}
-}
-return converted;
+      const converted = {};
+      for (const item of data) {
+        if (item.name) {
+          converted[item.name] = {
+            earned: item.achieved === true,
+            earned_time: item.UnlockTime || 0
+          };
+        }
+      }
+      return converted;
 
-} catch (e) {
-notifyError('❌ Error JSON: ' + e.message);
-return {};
-}
-} else if (fs.existsSync(iniPath)) {
-try {
-const iniData = fs.readFileSync(iniPath, 'utf8');
-const parsed = ini.parse(iniData);
-const converted = {};
+    } catch (e) {
+      notifyError('❌ Error JSON: ' + e.message);
+      return {};
+    }
+  } else if (fs.existsSync(iniPath)) {
+    try {
+      const iniData = fs.readFileSync(iniPath, 'utf8');
+      const parsed = ini.parse(iniData);
+      const converted = {};
 
-for (const key in parsed) {
-const ach = parsed[key];
-converted[key] = {
-earned: ach.Achieved === "1" || ach.Achieved === 1,
-progress: ach.CurProgress ? Number(ach.CurProgress) : undefined,
-max_progress: ach.MaxProgress ? Number(ach.MaxProgress) : undefined,
-earned_time: ach.UnlockTime ? Number(ach.UnlockTime) : 0
-};
-}
+      for (const key in parsed) {
+        const ach = parsed[key];
+        converted[key] = {
+          earned: ach.Achieved === "1" || ach.Achieved === 1,
+          progress: ach.CurProgress ? Number(ach.CurProgress) : undefined,
+          max_progress: ach.MaxProgress ? Number(ach.MaxProgress) : undefined,
+          earned_time: ach.UnlockTime ? Number(ach.UnlockTime) : 0
+        };
+      }
 
-return converted;
-} catch (e) {
-notifyError('❌ Error INI: ' + e.message);
-return {};
-}
-} else {
+      return converted;
+    } catch (e) {
+      notifyError('❌ Error INI: ' + e.message);
+      return {};
+    }
+  } else if (fs.existsSync(binPath)) {
+    try {
+      const parseStatsBin = require('./utils/parseStatsBin');
+      const raw = parseStatsBin(binPath);
+      const converted = {};
+      const configJsonPath = fullAchievementsConfigPath;
+      let crcMap = {};
+      
+      if (fs.existsSync(configJsonPath)) {
+        const configJson = JSON.parse(fs.readFileSync(configJsonPath, 'utf8'));
+        crcMap = buildCrcNameMap(configJson);
+      }
 
-if (fs.existsSync(binPath)) {
-try {
-const parseStatsBin = require('./utils/parseStatsBin');
-const raw = parseStatsBin(binPath);
-const converted = {};
-const configJsonPath = fullAchievementsConfigPath;
-let crcMap = {};
-if (fs.existsSync(configJsonPath)) {
-const configJson = JSON.parse(fs.readFileSync(configJsonPath, 'utf8'));
-crcMap = buildCrcNameMap(configJson);
-}
+      for (const [crc, item] of Object.entries(raw)) {
+        const configEntry = crcMap[crc.toLowerCase()];
+        const key = configEntry?.name || crc.toLowerCase();
 
-for (const [crc, item] of Object.entries(raw)) {
-const configEntry = crcMap[crc.toLowerCase()];
-const key = configEntry?.name || crc.toLowerCase();
+        converted[key] = {
+          earned: item.earned,
+          earned_time: item.earned_time
+        };
+      }
 
-converted[key] = {
-earned: item.earned,
-earned_time: item.earned_time
-};
-}
-
-return converted;
-} catch (e) {
-notifyError('❌ Error parsing stats.bin: ' + e.message);
-return {};
-}
-} else {
-return {};
-}
-}
+      return converted;
+    } catch (e) {
+      notifyError('❌ Error parsing stats.bin: ' + e.message);
+      return {};
+    }
+  }
+  
+  return {};
 }
 
 
